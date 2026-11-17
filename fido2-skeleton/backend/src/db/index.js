@@ -64,3 +64,85 @@ export default db;
 //   getUserByUsername(), createUser(), saveCredential(),
 //   getCredentialsForUser(), updateCounter(), logAttempt()
 // so routes don't write raw SQL inline.
+
+//daniel: here the DB helpers are using snake_case because its just easier to align them with the DB, but everywhere else is still using camel. just becareful.
+const get_user_stmt = db.prepare('SELECT * FROM users WHERE username = ?');
+export function getUserByUsername(username){
+ //taking in useranme and finding it within db
+   if(username == null)
+     return null;
+     
+   //find username
+   const queriedUser = get_user_stmt.get(username);
+   if(queriedUser == null)
+     return null;
+      
+   return queriedUser;
+}
+
+const get_userById_stmt = db.prepare('SELECT * FROM users WHERE id = ?');
+export function getUserById(id){
+ //taking in id and finding info within db
+   if(id == null)
+     return null;
+     
+   //find username
+   const queriedUser = get_userById_stmt.get(id);
+   if(queriedUser == null)
+     return null;
+      
+   return queriedUser;
+}
+
+const create_user_stmt = db.prepare('INSERT INTO users (id, username, display_name, created_at) VALUES (?, ?, ?, ?)');
+export function createUser({id, username, display_name}){
+  if(getUserByUsername(username) == null) //checking for dups
+    create_user_stmt.run(id, username, display_name, Date.now());
+  else{
+    console.log("username is taken");
+    return -1;
+  }
+}
+const save_creds_stmt = db.prepare('INSERT INTO credentials (credential_id, user_id, public_key, counter,transports, created_at) VALUES (?, ?, ?, ?, ?, ?)');
+export function saveCredential({credential_id, user_id, public_key, counter,transports}){
+  //saving credentials after registration succeeds
+  
+  const info = save_creds_stmt.run(credential_id, user_id, Buffer.from(public_key), counter,JSON.stringify(transports), Date.now());
+
+  return info.changes === 1;
+
+  
+}
+
+const get_credsByUser_stmt= db.prepare('SELECT * FROM credentials WHERE user_id= ?');
+export function getCredentialsForUser(user_id){
+  const creds = get_credsByUser_stmt.all(user_id);
+  return creds; //backend 1 pls parse the return of transports
+}
+
+
+const get_credsById_stmt= db.prepare('SELECT * FROM credentials WHERE credential_id = ?');
+export function getCredentialsForId(credential_id){
+  const creds = get_credsById_stmt.get(credential_id);
+  if(creds== null)
+    return null;
+  return creds;
+}
+
+const update_counter_stmt = db.prepare('UPDATE credentials SET counter = ? WHERE ? > counter AND credential_id = ?');
+export function updateCounter(credential_id, newCounter){
+//Daniel: backend 1 becareful with cases where there are 0 for counter and 0 for new counter, if both is 0 then new value will just be 0.
+  const update = update_counter_stmt.run(newCounter, newCounter, credential_id);
+  return update.changes === 1;
+}
+
+const log_attempt_stmt = db.prepare('INSERT INTO audit_log(username, method, outcome, detail, at) VALUES (?, ?, ?, ?, ?)');
+export function  logAttempt({username, method, outcome, detail}){
+  const log = log_attempt_stmt.run(username, method, outcome, detail, Date.now());
+  return log.changes === 1;
+}
+
+
+
+
+
