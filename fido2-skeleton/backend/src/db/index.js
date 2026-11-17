@@ -66,28 +66,36 @@ export default db;
 // so routes don't write raw SQL inline.
 
 
-const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
-export function getUserByUsername(username){
+const get_user_stmt = db.prepare('SELECT * FROM users WHERE username = ?');
+export function getUserByUsername(userId){
  //taking in useranme and finding it within db
-   if(username == null)
+   if(userId == null)
      return null;
      
    //find username
-   
-   const queriedUser = stmt.get(username);
+   const queriedUser = get_user_stmt.get(userId);
    if(queriedUser == null)
      return null;
       
    return queriedUser;
 }
-const stmt = db.prepare('INSERT INTO users (id, username, display_name, created_at) VALUES (?, ?, ?, ?)');
-export function createUser({id, username, displayName}){
-  
-  
-  stmt.run(id, username, displayName, Date.now());
-
+const create_user_stmt = db.prepare('INSERT INTO users (id, username, display_name, created_at) VALUES (?, ?, ?, ?)');
+export function createUser({id, username, display_name}){
+  if(getUserByUsername(username) == null) //checking for dups
+    create_user_stmt.run(id, username, display_name, Date.now());
+  else{
+    print("username is taken");
+    return -1;
+  }
 }
-export function  saveCredential()
+const save_creds_stmt = db.prepare('INSERT INTO credentials (credential_id, user_id, public_key, counter,transports, created_at) VALUES (?, ?, ?, ?, ?, ?)');
+export function  saveCredential({credential_id, user_id, public_key, counter,transports}){
+  //saving credentials after registration succeeds
+  bool ifSaved = save_creds_stmt.run(credential_id, user_id, public_key, counter,transports, Date.now());
+  
+  return ifSaved;
+  
+}
 export function  getCredentialsForUser()
 export function  updateCounter()
 export function  logAttempt()
