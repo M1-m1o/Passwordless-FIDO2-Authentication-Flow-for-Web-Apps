@@ -67,18 +67,33 @@ export default db;
 
 //daniel: here the DB helpers are using snake_case because its just easier to align them with the DB, but everywhere else is still using camel. just becareful.
 const get_user_stmt = db.prepare('SELECT * FROM users WHERE username = ?');
-export function getUserByUsername(userId){
+export function getUserByUsername(username){
  //taking in useranme and finding it within db
-   if(userId == null)
+   if(username == null)
      return null;
      
    //find username
-   const queriedUser = get_user_stmt.get(userId);
+   const queriedUser = get_user_stmt.get(username);
    if(queriedUser == null)
      return null;
       
    return queriedUser;
 }
+
+const get_userById_stmt = db.prepare('SELECT * FROM users WHERE id = ?');
+export function getUserById(id){
+ //taking in id and finding info within db
+   if(id == null)
+     return null;
+     
+   //find username
+   const queriedUser = get_userById_stmt.get(id);
+   if(queriedUser == null)
+     return null;
+      
+   return queriedUser;
+}
+
 const create_user_stmt = db.prepare('INSERT INTO users (id, username, display_name, created_at) VALUES (?, ?, ?, ?)');
 export function createUser({id, username, display_name}){
   if(getUserByUsername(username) == null) //checking for dups
@@ -120,7 +135,12 @@ export function updateCounter(credential_id, newCounter){
   const update = update_counter_stmt.run(newCounter, newCounter, credential_id);
   return update.changes === 1;
 }
-//export function  logAttempt()
+
+const log_attempt_stmt = db.prepare('INSERT INTO audit_log(username, method, outcome, detail, at) VALUES (?, ?, ?, ?, ?)');
+export function  logAttempt({username, method, outcome, detail}){
+  const log = log_attempt_stmt.run(username, method, outcome, detail, Date.now());
+  return log.changes === 1;
+}
 
 
 
