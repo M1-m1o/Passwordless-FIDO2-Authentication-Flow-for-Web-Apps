@@ -64,3 +64,35 @@ export default db;
 //   getUserByUsername(), createUser(), saveCredential(),
 //   getCredentialsForUser(), updateCounter(), logAttempt()
 // so routes don't write raw SQL inline.
+
+
+const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
+export function getUserByUsername(username){
+ //taking in useranme and finding it within db
+   if(username == null)
+     return null;
+     
+   //find username
+   
+   const queriedUser = stmt.get(username);
+   if(queriedUser == null)
+     return null;
+      
+   return queriedUser;
+}
+const stmt = db.prepare('INSERT INTO users (id, username, display_name, created_at) VALUES (?, ?, ?, ?)');
+export function createUser({id, username, displayName}){
+  
+  
+  stmt.run(id, username, displayName, Date.now());
+
+}
+export function  saveCredential()
+export function  getCredentialsForUser()
+export function  updateCounter()
+export function  logAttempt()
+
+
+
+
+
