@@ -65,7 +65,7 @@ export default db;
 //   getCredentialsForUser(), updateCounter(), logAttempt()
 // so routes don't write raw SQL inline.
 
-
+//daniel: here the DB helpers are using snake_case because its just easier to align them with the DB, but everywhere else is still using camel. just becareful.
 const get_user_stmt = db.prepare('SELECT * FROM users WHERE username = ?');
 export function getUserByUsername(userId){
  //taking in useranme and finding it within db
@@ -84,21 +84,25 @@ export function createUser({id, username, display_name}){
   if(getUserByUsername(username) == null) //checking for dups
     create_user_stmt.run(id, username, display_name, Date.now());
   else{
-    print("username is taken");
+    console.log("username is taken");
     return -1;
   }
 }
 const save_creds_stmt = db.prepare('INSERT INTO credentials (credential_id, user_id, public_key, counter,transports, created_at) VALUES (?, ?, ?, ?, ?, ?)');
 export function  saveCredential({credential_id, user_id, public_key, counter,transports}){
   //saving credentials after registration succeeds
-  bool ifSaved = save_creds_stmt.run(credential_id, user_id, public_key, counter,transports, Date.now());
   
-  return ifSaved;
+  const info = save_creds_stmt.run(credential_id, user_id, Buffer.from(public_key), counter,JSON.stringify(transports), Date.now());
+
+  return info.changes === 1
+
   
 }
-export function  getCredentialsForUser()
-export function  updateCounter()
-export function  logAttempt()
+
+
+//export function  getCredentialsForUser()
+//export function  updateCounter()
+//export function  logAttempt()
 
 
 
