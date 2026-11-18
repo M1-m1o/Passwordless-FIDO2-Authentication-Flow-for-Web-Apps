@@ -117,7 +117,7 @@ Per the course's Responsible AI Use policy, we disclose the following use of
 7. "Can you list the distribution of work between the backend people... and
    explain the flow of the program and what it means to keep something persistent?"
 
-### Melisha's prompts (using Gemini)
+### Melisha's prompts (using Copilot)
 1. How do I run the program?
 2. Create a list with examples of each to do for backend 1
 3. Summarize and explain in detail the skeleton code given for my sections
@@ -159,7 +159,7 @@ team is writing the authentication, database, session, and recovery logic itself
 
 ### Melisha's reflection
 
-Gemini helped me get started on the project. At the beginning, I was not too familiar with programming projects that required authentication so I was a bit
-confused with the skeleton code. However, Gemini was able to point me in the right direction and help me understand the skeleton I would be implementing
-everything on. I also do not typically run programs that have a html page so I had to learn how to set it up and run it on my local machine, which Gemini 
+Copilot helped me get started on the project. At the beginning, I was not too familiar with programming projects that required authentication so I was a bit
+confused with the skeleton code. However, Copilot was able to point me in the right direction and help me understand the skeleton I would be implementing
+everything on. I also do not typically run programs that have a html page so I had to learn how to set it up and run it on my local machine, which Copilot 
 assisted with as well. I also used it in order to aid with debugging when I was not sure what was going on or where the issue was.
